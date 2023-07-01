@@ -1,0 +1,20 @@
+{
+  "dependencies": {
+    "@types/yargs": "^17.0.24",
+    "chalk": "^4.1.2",
+    "yargs": "^17.7.2"
+  },
+  "name": "note-app",
+  "version": "1.0.0",
+  "description": "This is simple NodeJs Application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "node",
+    "javascript"
+  ],
+  "author": "Egor Novikov <fl.rbyeave@gmail.com>",
+  "license": "ISC"
+}
