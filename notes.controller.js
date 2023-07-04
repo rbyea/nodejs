@@ -10,15 +10,11 @@ async function addNote(title) {
     title,
     id: Date.now().toString(),
   };
-  notes.push(note);
-  await fs.writeFile(notesPath, JSON.stringify(notes));
-  console.log(chalk.green.inverse("Note was added!"));
-}
 
-function getList(notes) {
-  notes.forEach((note) => {
-    console.log(chalk.blue("id: " + note.id, "title: " + note.title));
-  });
+  notes.push(note);
+
+  await saveNotes(notes);
+  console.log(chalk.bgGreen("Note was added!"));
 }
 
 async function getNotes() {
@@ -26,26 +22,55 @@ async function getNotes() {
   return Array.isArray(JSON.parse(notes)) ? JSON.parse(notes) : [];
 }
 
+async function saveNotes(notes) {
+  await fs.writeFile(notesPath, JSON.stringify(notes));
+}
+
 async function printNotes() {
   const notes = await getNotes();
 
-  console.log(chalk.green("Here is the list of notes: "));
-  getList(notes);
+  console.log(chalk.bgBlue("Here is the list of notes:"));
+  notes.forEach((note) => {
+    console.log(chalk.bgWhite(note.id), chalk.blue(note.title));
+  });
 }
 
-async function deleteNote(id) {
+async function removeNote(id) {
   const notes = await getNotes();
-  const filterNotes = notes.filter((note) => note.id !== id);
-  saveDb(filterNotes);
-  getList(filterNotes);
+
+  const filtered = notes.filter((note) => note.id !== id);
+
+  await saveNotes(filtered);
+  console.log(chalk.red(`Note with id="${id}" has been removed.`));
 }
 
-async function saveDb(notes) {
-  await fs.writeFile(notesPath, JSON.stringify(notes));
+async function editNote(editObj) {
+  const notes = await getNotes();
+  const { title, id } = editObj;
+
+  const findNotesIndex = notes.findIndex((note) => note.id === id);
+
+  if (typeof title !== "object") {
+    notes[findNotesIndex] = { ...notes[findNotesIndex], ...editObj };
+    await saveNotes(notes);
+
+    console.log(
+      chalk.bgGreenBright(
+        `Note with id="${id}" has been update Title = ${title}.`
+      )
+    );
+  } else {
+    console.log(
+      chalk.bgRedBright(
+        `Note with id="${id}" not edit. Title = ${title}.`
+      )
+    );
+  }
 }
 
 module.exports = {
   addNote,
-  printNotes,
-  deleteNote,
+  getNotes,
+  removeNote,
+  editNote,
 };
